@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,18 +15,23 @@ public class Main {
 
         // --- ANA PENCERE (FRAME) AYARLARI ---
         JFrame frame = new JFrame("AOOP Project Text Editor");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //close operation
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);//close operation
         frame.setSize(800, 500);
+
 
         // --- METİN ALANI (TEXT AREA) AYARLARI ---
         JTextArea textArea = new JTextArea();
         // Font ayarını Singleton objesinden alıyoruz
         textArea.setFont(new Font(config.getFontName(), Font.PLAIN, config.getFontSize()));
 
+
+
         // --- DURUM ÇUBUĞU (STATUS LABEL) ---
         JLabel statusLabel = new JLabel("Character number: 0");
         // Observer Pattern: Model değiştikçe karakter sayısını otomatik güncelle
         model.addObserver(text -> statusLabel.setText("Character number: " + text.length()));
+
+        JOptionPane.showMessageDialog(frame,"welcome to the notepad 2.0 :)", "WELCOME", JOptionPane.PLAIN_MESSAGE);
 
         // --- DOSYA YOLU TAKİBİ ---
         // Lambda ifadeleri içinden erişebilmek için tek elemanlı dizi
@@ -37,6 +43,33 @@ public class Main {
         FindCommand findcmd = new FindCommand(textArea, "");
         SaveCommand saveCmd = new SaveCommand();
         TypeCommand cmd = new TypeCommand(model);
+
+
+        frame.addWindowListener(new java.awt.event.WindowAdapter(){
+                                    @Override
+                                    public void windowClosing(java.awt.event.WindowEvent event) {
+                                        int result = JOptionPane.showConfirmDialog(
+                                                frame,
+                                                "Are you sure you want to exit?",
+                                                "CONFIRM",
+                                                JOptionPane.YES_NO_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE);
+
+                                        if (result == JOptionPane.YES_OPTION && saveCmd.getSaveNumber()) {
+                                            System.exit(0);
+                                        }
+                                        if(result == JOptionPane.YES_OPTION && !saveCmd.getSaveNumber()){
+                                            int sureness = JOptionPane.showConfirmDialog(frame,"you hasn't saved your progress!", "WARNING", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                                            if(sureness == JOptionPane.OK_OPTION){
+                                                System.exit(0);
+                                            }
+                                        }
+
+
+                                    }
+
+                                }
+        );
 
         // --- BUTON PANELİ VE YERLEŞİM (LAYOUT) ---
         // GridLayout(satır, sütun, yatay boşluk, dikey boşluk)

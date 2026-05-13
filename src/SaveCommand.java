@@ -2,6 +2,7 @@
 public class SaveCommand implements Command {
     private String content;
     private String path;
+    private boolean saved = false;
 
     public SaveCommand() {
     }
@@ -21,10 +22,15 @@ public class SaveCommand implements Command {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        saved = true;
     }
 
     @Override
     public void undo() {
         return;
+    }
+
+    public boolean getSaveNumber(){
+        return this.saved;
     }
 }
