@@ -1,4 +1,4 @@
-/*import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TextModelTest {
@@ -24,4 +24,4 @@ class TextModelTest {
         // Observer tetiklendi mi?
         assertTrue(isNotified[0], "Metin değiştiğinde observer tetiklenmeli.");
     }
-}*/
+}
