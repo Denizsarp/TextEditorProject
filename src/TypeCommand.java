@@ -5,8 +5,13 @@ public class TypeCommand implements Command{
 
 
     public TypeCommand(TextModel content){
+        setContent(content);
+    }
+
+    public void setContent(TextModel content){
         this.content = content;
     }
+
 
     public void setNewText(String text) {
         this.newText = text;

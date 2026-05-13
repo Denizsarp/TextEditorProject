@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,8 +13,8 @@ public class Main {
         EditorConfig config = EditorConfig.getEditorConfigObject(); // Singleton: Editör ayarları
 
         // --- ANA PENCERE (FRAME) AYARLARI ---
-        JFrame frame = new JFrame("Design Patterns Text Editor");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JFrame frame = new JFrame("AOOP Project Text Editor");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //close operation
         frame.setSize(800, 500);
 
         // --- METİN ALANI (TEXT AREA) AYARLARI ---
@@ -26,8 +28,10 @@ public class Main {
         model.addObserver(text -> statusLabel.setText("Character number: " + text.length()));
 
         // --- DOSYA YOLU TAKİBİ ---
-        // Lambda ifadeleri içinden erişebilmek için tek elemanlı dizi kullanıyoruz
+        // Lambda ifadeleri içinden erişebilmek için tek elemanlı dizi
         final String[] currentFilePath = {null};
+
+
 
         ChangeFontCommand fontCmd = new ChangeFontCommand(textArea, 18);
         FindCommand findcmd = new FindCommand(textArea, "");
@@ -97,6 +101,22 @@ public class Main {
 
             System.out.println("Font size decreased to: " + nextSize);
         });
+
+
+        btnIterate.addActionListener(e -> {
+            String[] textLines = textArea.getText().split("\n");
+            LineIterator iterator = new LineIterator(Arrays.asList(textLines));
+
+            int lines = 0;
+            while(iterator.hasNext()){
+                if(!iterator.next().trim().isEmpty()){
+                    lines++;
+                }
+            }
+            JOptionPane.showMessageDialog(frame, "Row number is: " + lines);
+
+        });
+
 
         // FARKLI KAYDET (Save As) MANTIĞI
         btnSaveAs.addActionListener(e -> {
