@@ -21,6 +21,7 @@ public class OpenCommand implements Command{
 
     @Override
     public void execute(){
+        oldText = this.textModel.getText();
         StringBuilder builder = new StringBuilder();
         // reader.read() metodu dosyanın sonuna gelene kadar karakterin sayısal değerini döndürür
         // Dosya bittiğinde -1 döndürür.
@@ -46,7 +47,14 @@ public class OpenCommand implements Command{
 
     @Override
     public void undo(){
-        return;
+        StringBuilder builder = new StringBuilder();
+        if(!oldText.isEmpty()){
+            for(int i = 0; i < oldText.length(); i++){
+                char character = oldText.charAt(i);
+                builder.append(character);
+            }
+        }
+        textModel.setText(builder.toString());
 
     }
 

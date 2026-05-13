@@ -20,10 +20,10 @@ public class TextModel {
     }
     public String getText(){
         return this.text;
-    }
+    } //returns string of all content
     public EditorState save(){
         return new EditorState(text);
-    }
+    } //saves current text and state
 
     public void restore(EditorState state){
         setText(state.getSavedContent());
