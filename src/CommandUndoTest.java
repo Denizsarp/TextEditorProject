@@ -1,4 +1,4 @@
-/*import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CommandUndoTest {
@@ -24,4 +24,4 @@ class CommandUndoTest {
         // Metin "İlk hali"ne geri döndü mü?
         assertEquals("İlk hali", model.getText(), "Undo işleminden sonra metin eski haline dönmeli.");
     }
-}*/
+}
