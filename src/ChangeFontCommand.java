@@ -1,16 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Font boyutunu değiştirmek için kullanılan komut sınıfı.
- * Hem konfigürasyonu günceller hem de UI (arayüz) elemanına değişikliği yansıtır.
- */
+// ChangeFontCommand: using for changing the font size
 public class ChangeFontCommand implements Command {
-    private int newSize;
-    private int oldSize;      // Geri alma işlemi için eski boyut
-    private JTextArea textArea; // Değişikliğin yansıtılacağı bileşen
 
-    // Constructor: Yeni boyut ve hedef metin alanını alır
+    private int newSize;
+    private int oldSize;      // Store old size for undo.
+    private JTextArea textArea; // the area that is going to be updated.
+
     public ChangeFontCommand(JTextArea textArea, int newSize) {
         this.textArea = textArea;
         setNewSize(newSize);
@@ -22,26 +19,25 @@ public class ChangeFontCommand implements Command {
 
     @Override
     public void execute() {
-        // Mevcut boyutu geri alma işlemi için sakla
+
+        // Take the current size and store
         this.oldSize = EditorConfig.getEditorConfigObject().getFontSize();
 
-        // 1. Singleton konfigürasyonunu güncelle
+        // 1. Update Singleton configuration
         EditorConfig.getEditorConfigObject().setFontSize(newSize);
 
-        // 2. Değişikliği JTextArea üzerinde uygula (UI Güncelleme)
+        // 2. Updating ui with new size
         updateUI(newSize);
     }
 
     @Override
     public void undo() {
-        // Eski boyutu konfigürasyona geri yükle
+        // Load the old size to configuration.
         EditorConfig.getEditorConfigObject().setFontSize(oldSize);
-
-        // UI'ı eski boyuta geri döndür
         updateUI(oldSize);
     }
 
-    // Yardımcı metod: Fontu fiziksel olarak JTextArea'ya uygular
+    // Apply the change in font size to JavaTextArea
     private void updateUI(int size) {
         Font currentFont = textArea.getFont();
 

@@ -1,5 +1,5 @@
+// interface for all commands that includes execute() and undo()
 public interface Command {
-    //Tüm komutlar için genel methodlar
     void execute();
     void undo();
 }

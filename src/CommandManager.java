@@ -1,5 +1,6 @@
 import java.util.Stack;
 
+// Manages the execution of commands and maintains a history stack to support undo operations.
 public class CommandManager {
     private Stack<Command> history = new Stack<>();
 

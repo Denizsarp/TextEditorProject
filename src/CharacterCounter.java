@@ -1,3 +1,4 @@
+// text counter class
 public class CharacterCounter implements Observer{
 
     @Override

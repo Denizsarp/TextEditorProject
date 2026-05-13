@@ -1,6 +1,7 @@
 import java.io.FileReader;
 import java.io.IOException;
 
+// OpenCommand usage: we declared this function for opening the previous file that user has written.
 public class OpenCommand implements Command{
     private TextModel textModel;
     private String path;
@@ -23,19 +24,15 @@ public class OpenCommand implements Command{
     public void execute(){
         oldText = this.textModel.getText();
         StringBuilder builder = new StringBuilder();
-        // reader.read() metodu dosyanın sonuna gelene kadar karakterin sayısal değerini döndürür
-        // Dosya bittiğinde -1 döndürür.
 
         try(FileReader reader = new FileReader(this.path)){
             int character;
 
             while((character = reader.read()) != -1){
-                // Sayısal değeri karaktere (char) çevirip StringBuilder'a ekliyoruz
                 builder.append((char) character);
 
             }
 
-            // Okuma bitince modeldeki metni güncelle
             textModel.setText(builder.toString());
 
         }

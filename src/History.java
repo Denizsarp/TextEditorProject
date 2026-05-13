@@ -1,5 +1,6 @@
 import java.util.Stack;
 
+// History class: store states and basic push pop isEmpty commands.
 public class History{
     private Stack<EditorState> editorStates = new Stack<EditorState>();
 

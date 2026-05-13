@@ -6,43 +6,49 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
+
     public static void main(String[] args) {
 
-        // --- MODEL VE YÖNETİCİ BAŞLATMA ---
-        TextModel model = new TextModel(); // Metin verisini tutan model
-        CommandManager commandManager = new CommandManager(); // Komutları (Undo/Redo) yöneten sınıf
-        EditorConfig config = EditorConfig.getEditorConfigObject(); // Singleton: Editör ayarları
+        // Defining TextModel for text storage
+        TextModel textModel = new TextModel();
+        // Defining command manager for undo and redo commands
+        CommandManager commandManager = new CommandManager();
+        // Defining config for editor settings
+        EditorConfig config = EditorConfig.getEditorConfigObject();
 
-        // --- ANA PENCERE (FRAME) AYARLARI ---
+        // Defining Frame
         JFrame frame = new JFrame("AOOP Project Text Editor");
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);//close operation
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); //close operation
         frame.setSize(800, 500);
 
-
-        // --- METİN ALANI (TEXT AREA) AYARLARI ---
+        // Defining text area
         JTextArea textArea = new JTextArea();
-        // Font ayarını Singleton objesinden alıyoruz
+        // Getting font settings from Singleton object (config)
         textArea.setFont(new Font(config.getFontName(), Font.PLAIN, config.getFontSize()));
 
-
-
-        // --- DURUM ÇUBUĞU (STATUS LABEL) ---
+        // Defining status label for giving feedback to user
         JLabel statusLabel = new JLabel("Character number: 0");
-        // Observer Pattern: Model değiştikçe karakter sayısını otomatik güncelle
-        model.addObserver(text -> statusLabel.setText("Character number: " + text.length()));
+        // Observer Pattern: Change the character count according to text length.
+        textModel.addObserver(text -> statusLabel.setText("Character number: " + text.length()));
 
+        // Little welcoming screen.
         JOptionPane.showMessageDialog(frame,"welcome to the notepad 2.0 :)", "WELCOME", JOptionPane.PLAIN_MESSAGE);
 
         // --- DOSYA YOLU TAKİBİ ---
         // Lambda ifadeleri içinden erişebilmek için tek elemanlı dizi
         final String[] currentFilePath = {null};
 
-
-
-        ChangeFontCommand fontCmd = new ChangeFontCommand(textArea, 18);
-        FindCommand findcmd = new FindCommand(textArea, "");
-        SaveCommand saveCmd = new SaveCommand();
-        TypeCommand cmd = new TypeCommand(model);
+        /*
+        Class declarations
+        fontAdjuster: for adjusting the size of text, we declared a class named ChangeFontCommand and fontAdjuster is a object of it.
+        finder: Same logic behind the declaration of finder. For preventing the repeat at process, we declared a object named finder from class named FindCommand
+        saver: Same logic behind the declaration of saver. For preventing the repeat at process, we declared a object named saver from class named SaveCommand
+        cmd: update the text synchronously
+        */
+        ChangeFontCommand fontAdjuster = new ChangeFontCommand(textArea, 18);
+        FindCommand finder = new FindCommand(textArea, "");
+        SaveCommand saver = new SaveCommand();
+        TypeCommand cmd = new TypeCommand(textModel);
 
        //Confirmation message while exiting application with JOptionPane library
         frame.addWindowListener(new java.awt.event.WindowAdapter(){
@@ -55,14 +61,21 @@ public class Main {
                                                 JOptionPane.YES_NO_OPTION,
                                                 JOptionPane.QUESTION_MESSAGE);
 
-                                        if (result == JOptionPane.YES_OPTION && saveCmd.getSaveNumber()) {
-                                            System.exit(0);
-                                        }
-                                        if(result == JOptionPane.YES_OPTION && !saveCmd.getSaveNumber()){
-                                            int sureness = JOptionPane.showConfirmDialog(frame,"you hasn't saved your progress!", "WARNING", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-                                            if(sureness == JOptionPane.OK_OPTION){
+
+                                        if (result == JOptionPane.YES_OPTION) {
+
+                                            if (saver.getSaveNumber()) {
                                                 System.exit(0);
+                                            } else {
+
+                                                int sureness = JOptionPane.showConfirmDialog(frame,"you hasn't saved your progress!", "WARNING", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                                                if(sureness == JOptionPane.OK_OPTION){
+                                                    System.exit(0);
+                                                }
+
                                             }
+
+
                                         }
 
 
@@ -71,8 +84,7 @@ public class Main {
                                 }
         );
 
-        // --- BUTON PANELİ VE YERLEŞİM (LAYOUT) ---
-        // GridLayout(satır, sütun, yatay boşluk, dikey boşluk)
+        // Defining the buttons and adjusting the layout by using GridLayout(row, column, horizontal gap, vertical gap)
         JPanel buttonPanel = new JPanel(new GridLayout(0, 3, 5, 5));
 
         JButton btnType = new JButton("Confirm Text");
@@ -80,12 +92,12 @@ public class Main {
         JButton increaseFont = new JButton("Size +");
         JButton decreaseFont = new JButton("Size -");
         JButton btnIterate = new JButton("List Rows");
-        JButton btnSave = new JButton("Save"); // Mevcut dosyanın üzerine yazar
-        JButton btnSaveAs = new JButton("Save As (.txt)"); // Her zaman yol sorar
+        JButton btnSave = new JButton("Save");
+        JButton btnSaveAs = new JButton("Save As (.txt)");
         JButton btnFind = new JButton("Find");
         JButton btnOpen = new JButton("Open");
 
-        // Butonları panele ekle
+        // Adding buttons to panel
         buttonPanel.add(btnType);
         buttonPanel.add(btnUndo);
         buttonPanel.add(increaseFont);
@@ -95,8 +107,6 @@ public class Main {
         buttonPanel.add(btnSaveAs);
         buttonPanel.add(btnFind);
         buttonPanel.add(btnOpen);
-
-        // --- BUTON AKSİYONLARI (ACTION LISTENERS) ---
 
         // Metni onaylama ve Model'e gönderme (TypeCommand)
         btnType.addActionListener(e -> {
@@ -108,33 +118,31 @@ public class Main {
         // Son işlemi geri alma (Undo)
         btnUndo.addActionListener(e -> {
             commandManager.undo();
-            textArea.setText(model.getText());
+            textArea.setText(textModel.getText());
             System.out.println("Last operation has been reversed!");
         });
 
+        // Increasing the font by 2 with every click
         increaseFont.addActionListener(e -> {
-            // Mevcut font boyutunu al ve 2 birim arttır
+
             int currentSize = EditorConfig.getEditorConfigObject().getFontSize();
             int nextSize = currentSize + 2;
-
-            // Komutu oluştur ve CommandManager üzerinden çalıştır
-            fontCmd.setNewSize(nextSize);
-            commandManager.executeCommand(fontCmd);
+            fontAdjuster.setNewSize(nextSize);
+            commandManager.executeCommand(fontAdjuster);
 
             System.out.println("Font size increased to: " + nextSize);
         });
 
+        // Decreasing the font by 2 with every click
         decreaseFont.addActionListener(e -> {
             int currentSize = EditorConfig.getEditorConfigObject().getFontSize();
             int nextSize = currentSize - 2;
 
-            // Komutu oluştur ve CommandManager üzerinden çalıştır
-            fontCmd.setNewSize(nextSize);
-            commandManager.executeCommand(fontCmd);
+            fontAdjuster.setNewSize(nextSize);
+            commandManager.executeCommand(fontAdjuster);
 
             System.out.println("Font size decreased to: " + nextSize);
         });
-
 
         btnIterate.addActionListener(e -> {
             String[] textLines = textArea.getText().split("\n");
@@ -151,7 +159,7 @@ public class Main {
         });
 
 
-        // FARKLI KAYDET (Save As) MANTIĞI
+        // Save as: ask for the file path to save and save to that location.
         btnSaveAs.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Select location to save");
@@ -167,87 +175,72 @@ public class Main {
                     filePath += ".txt";
                 }
 
-                // Dosya yolunu hafızaya kaydet
+                // Save file path to array declared before.
                 currentFilePath[0] = filePath;
 
-                saveCmd.setPath(filePath);
-                saveCmd.setContent(textArea.getText());
+                saver.setPath(filePath);
+                saver.setContent(textArea.getText());
 
-                commandManager.executeCommand(saveCmd);
+                commandManager.executeCommand(saver);
 
                 JOptionPane.showMessageDialog(frame, "File saved successfully!");
             }
         });
 
-        // KAYDET (Save) MANTIĞI
+        // Just save
         btnSave.addActionListener(e -> {
-            // Eğer daha önce hiç kaydedilmediyse (yol null ise) Save As penceresini aç
-            if (currentFilePath[0] == null) {
+
+            if (currentFilePath[0] == null) { // If no save has been done before, act like 'save as'
                 btnSaveAs.doClick();
             } else {
-                // Yol zaten belliyse direkt üzerine yaz
+                saver.setPath(currentFilePath[0]);
+                saver.setContent(textArea.getText());
 
-                saveCmd.setPath(currentFilePath[0]);
-                saveCmd.setContent(textArea.getText());
-
-                commandManager.executeCommand(saveCmd);
+                commandManager.executeCommand(saver);
                 System.out.println("Updated existing file: " + currentFilePath[0]);
                 JOptionPane.showMessageDialog(frame, "Changes saved!");
             }
         });
 
-        // METİN ARAMA (FindCommand)
+        // Find command: Find the given input, highlight the upfront one.
         btnFind.addActionListener(e -> {
             String word = JOptionPane.showInputDialog(frame, "Enter text to search:");
 
             if (word != null && !word.trim().isEmpty()){
 
-                findcmd.setTarget(word);
-
-                commandManager.executeCommand(findcmd);
+                finder.setTarget(word);
+                commandManager.executeCommand(finder);
             }
         });
 
-        // 2. Butonun aksiyonunu yaz
+        // Opening the existing file.
         btnOpen.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Bir dosya seç");
 
-            // Sadece mevcut dosyaları açmak için OpenDialog kullanıyoruz
             int userSelection = fileChooser.showOpenDialog(frame);
 
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 java.io.File selectedFile = fileChooser.getSelectedFile();
                 String path = selectedFile.getAbsolutePath();
 
-                // --- COMMAND PATTERN KULLANIMI ---
-                // Komutu oluştur ve CommandManager üzerinden çalıştır
-                OpenCommand openCmd = new OpenCommand(model, path);
+                OpenCommand openCmd = new OpenCommand(textModel, path);
                 commandManager.executeCommand(openCmd);
 
-                // --- UI GÜNCELLEME ---
-                // Modeldeki yeni metni textArea'ya yansıt
-                textArea.setText(model.getText());
-
-                // --- ÖNEMLİ: Dosya yolunu güncelle ---
-                // 'Save' butonuna basınca direkt bu dosyanın üzerine yazması için yolu kaydediyoruz
+                textArea.setText(textModel.getText());
                 currentFilePath[0] = path;
 
                 System.out.println("Dosya açıldı: " + path);
             }
         });
 
-
-
-
-        // --- PENCERE BİLEŞENLERİNİ YERLEŞTİRME ---
+        // Finally, adjusting frame
         frame.setLayout(new BorderLayout());
-        // JScrollPane: Metin uzarsa kaydırma çubuğu çıkmasını sağlar
-        frame.add(new JScrollPane(textArea), BorderLayout.CENTER);
-        frame.add(buttonPanel, BorderLayout.NORTH); // Butonlar üstte
-        frame.add(statusLabel, BorderLayout.SOUTH); // Durum çubuğu altta
 
-        // Pencereyi görünür yap
+        frame.add(new JScrollPane(textArea), BorderLayout.CENTER); // Scroll for long texts
+        frame.add(buttonPanel, BorderLayout.NORTH);
+        frame.add(statusLabel, BorderLayout.SOUTH);
+
         frame.setVisible(true);
     }
 }

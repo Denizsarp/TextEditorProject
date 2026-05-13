@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
+// Storing the given text.
 public class TextModel {
     private String text = "";
     private List<Observer> observers = new ArrayList<>();

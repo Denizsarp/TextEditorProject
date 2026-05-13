@@ -1,4 +1,4 @@
-// Örnek bir SaveCommand taslağı
+// SaveCommand usage: saving
 public class SaveCommand implements Command {
     private String content;
     private String path;

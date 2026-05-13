@@ -1,3 +1,5 @@
+
+// Setting typed input.
 public class TypeCommand implements Command{
     private TextModel content;
     private String newText;
@@ -11,7 +13,6 @@ public class TypeCommand implements Command{
     public void setContent(TextModel content){
         this.content = content;
     }
-
 
     public void setNewText(String text) {
         this.newText = text;

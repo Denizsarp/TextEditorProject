@@ -1,15 +1,12 @@
 import javax.swing.*;
 
-/**
- * Metin içinde arama yapma işlemini yöneten komut sınıfı.
- * Metni değiştirmediği için geri alma (undo) işlemi sadece seçimi temizler.
- */
+// FindCommand usage: Take an input from user and highlight the FIRST one that appears in text.
 public class FindCommand implements Command {
 
-    private JTextArea textArea; // Üzerinde arama yapılacak metin alanı
-    private String target;      // Aranacak kelime veya cümle
+    private JTextArea textArea;
+    private String target;
 
-    // Constructor: Hangi alanda neyi arayacağımızı belirtiyoruz
+    // Constructor
     public FindCommand(JTextArea textArea, String target){
         this.textArea = textArea;
         this.setTarget(target);
@@ -21,33 +18,29 @@ public class FindCommand implements Command {
 
     @Override
     public void execute(){
-        // Aranan metin boşsa işlem yapmadan çık
+
         if(target == null || target.isEmpty()){
             return;
         }
 
-        String targetText = textArea.getText(); // Tüm metni al
+        String targetText = textArea.getText();
 
-        // Aramaya imlecin (caret) o anki konumundan başla (Sonrakini Bul özelliği)
         int startPosition = textArea.getCaretPosition();
         int index = targetText.indexOf(target, startPosition);
 
-        // Eğer imleçten sonra kelimeyi bulamazsa, metnin en başına dönüp tekrar bak (Wrap search)
+
         if (index == -1){
             index = targetText.indexOf(target, 0);
         }
 
-        // Kelime bulunduysa
         if(index != -1){
-            // Kelimeyi maviyle seçili (highlight) hale getir
+
             textArea.setSelectionStart(index);
             textArea.setSelectionEnd(index + target.length());
-            // Odaklanmayı metin alanına ver ki seçim kullanıcıya görünsün
             textArea.requestFocusInWindow();
         }
         else{
-            // Kelime metnin hiçbir yerinde yoksa kullanıcıya uyarı ver
-            JOptionPane.showMessageDialog(textArea, "'" + target + "' bulunamadı!");
+            JOptionPane.showMessageDialog(textArea, "'" + target + "' is not found in text!");
         }
     }
 

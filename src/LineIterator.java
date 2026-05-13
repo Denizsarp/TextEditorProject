@@ -2,6 +2,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+// Returning how much line are there with iterate logic.
 public class LineIterator implements Iterator<String>{
     private List<String> lines;
     private int position = 0;

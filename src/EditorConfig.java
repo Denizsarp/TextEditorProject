@@ -5,7 +5,6 @@ public class EditorConfig {
     private String theme = "Light";
     private String fontName = "Arial";
 
-
     private EditorConfig(){}
     //constructor
     public static EditorConfig getEditorConfigObject(){
