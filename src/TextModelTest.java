@@ -6,22 +6,22 @@ class TextModelTest {
     @Test
     void testSetAndGetText() {
         TextModel model = new TextModel();
-        model.setText("Merhaba Dünya");
+        model.setText("Hello World");
 
-        // Metin doğru set edildi mi?
-        assertEquals("Merhaba Dünya", model.getText(), "Modeldeki metin beklenenle aynı olmalı.");
+        // Is the text set correctly?
+        assertEquals("Hello World", model.getText(), "The text in the model should match what is expected.");
     }
 
     @Test
     void testObserverNotification() {
         TextModel model = new TextModel();
-        // Lambda içinde bir bayrak (flag) kullanarak observer'ın çalışıp çalışmadığını test ediyoruz
+        // We test whether the observer is working by using a flag inside lambda.
         final boolean[] isNotified = {false};
 
         model.addObserver(text -> isNotified[0] = true);
-        model.setText("Yeni Metin");
+        model.setText("New Text");
 
-        // Observer tetiklendi mi?
-        assertTrue(isNotified[0], "Metin değiştiğinde observer tetiklenmeli.");
+        // Did the Observer triggered?
+        assertTrue(isNotified[0], "The observer should be triggered when the text changes..");
     }
 }
