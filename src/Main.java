@@ -44,7 +44,7 @@ public class Main {
         SaveCommand saveCmd = new SaveCommand();
         TypeCommand cmd = new TypeCommand(model);
 
-
+       //Confirmation message while exiting application with JOptionPane library
         frame.addWindowListener(new java.awt.event.WindowAdapter(){
                                     @Override
                                     public void windowClosing(java.awt.event.WindowEvent event) {
